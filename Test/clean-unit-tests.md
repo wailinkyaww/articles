@@ -81,3 +81,5 @@ run ဖို့ကြာနေပြီဆိုရင် ရေရှည်မ
 နောက်သတိထားရမှာ တစ်ခုက shared datasource (db, cache, etc.,) တွေကို testing အတွက်မသုံးဖို့ပါ။ test တွေကို parallel run တာမျိုး၊ test တစ်ခုကနေ test data တွေထည့်ပြီး clean up
 လုပ်ဖို့ ကျန်ခဲ့တာမျိုးဆိုရင် race condition တွေရှိလာနိုင်တယ်။ အဲ့ဒီအခါကျရင် test တွေက randomly fail တာ randomly pass တာမျိုးတွေ ဖြစ်လာပါလိမ့်မယ်။ 
 အဲ့တော့ database ကိုပါ ထည့်ပြီး test လုပ်ရမှာတွေပါခဲ့ရင် `test suite` တစ်ခုချင်းစီတိုင်းအတွက် in memory instance လိုမျိုး spawn လုပ်ပြီး သုံးသင့်တယ်။
+
+Test code တွေကို မကြာခဏ refactor လုပ်ဖို့လိုပါတယ်။ ဒါမှရေရှည်မှာ automated test တွေကနေပေးတဲ့ benefits ကိုခံစားနိုင်မှာပါ။
