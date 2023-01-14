@@ -19,12 +19,26 @@ ACID လို့ အသိများတယ်။
 
 ACID - Atomicity, Consistency, Isolation, Durability
 
-database တိုင်းကတော့ ACID မပေးဘူး။ database တစ်ခုနဲ့ တစ်ခု ACID ကို implement လုပ်ပုံချင်းလည်း မတူကြဘူး။ 
-ကိုယ့် software ရဲ့ infrastructure နဲ့ architecture ပေါ်မူတည်ပြီး database ကနေပေးတဲ့ ACID နဲ့တင် Business Logic ကို ကောင်းကောင်း handle
-လုပ်လို့ ရမရ ဆိုတာမျိုးတွေလည်း ရှိတယ်။ ကိုယ်က microservice architecture နဲ့ service တစ်ခုချင်းစီကို separate database တစ်ခုစီ သုံးပြီးသွားနေတယ် ဆိုပါစို့။ 
+database တိုင်းကတော့ ACID မပေးဘူး။ တစ်ချို့ database တွေ (အများအားဖြင့် NoSQL database တွေ) က BASE လို့ခေါ်တဲ့ Basically Available, Soft State, and Eventual consistency ဒီ property တွေပဲပေးတယ်။ 
+database တစ်ခုနဲ့ တစ်ခု ACID ကို implement လုပ်ပုံချင်းလည်း မတူကြဘူး။ ကိုယ့် software ရဲ့ infrastructure နဲ့ architecture ပေါ်မူတည်ပြီး database ကနေပေးတဲ့ ACID နဲ့တင် 
+Business Logic ကို ကောင်းကောင်း handle လုပ်လို့ ရမရ ဆိုတာမျိုးတွေလည်း ရှိတယ်။ ကိုယ်က microservice architecture နဲ့ service တစ်ခုချင်းစီကို separate database တစ်ခုစီ သုံးပြီးသွားနေတယ် ဆိုပါစို့။ 
 ခုနက shopping cart example မှာပဲ ပြန်ကြည့်ရင် product service တစ်ခု၊ order service တစ်ခု ရှိမယ်ဆိုရင်
 order create လုပ်ရင် product service က in stock item count ကိုပါသွားပြီး update လုပ်ရမှာ ဖြစ်တဲ့ အတွက် normal transaction တွေနဲ့တင် မလုံလောက်ဘူး။
 
 multi database ဖြစ်နေလို့။ 2PC လို့ခေါ်တဲ့ 2 Phase Commit လိုကောင်မျိုးသုံးလို့ရတယ်။ ဒါပေမဲ့လို့ ဒီနေရာမှာဆို microservice ရဲ့ အရေးကြီးတဲ့ property တစ်ခုဖြစ်တဲ့
 availability ကိုသွားပြီး ထိခိုက်မှာပေါ့။ ဘာလို့လဲဆိုရင် 2PC က synchronous communication ပုံစံတစ်ခုဖြစ်နေလို့။ 
-Order service သည် Product service ကို မှီခိုနေတဲ့ သဘောမျိုးပဲ။ ဒီလိုနေရာမှာ ဆိုရင် 2PC မဟုတ်တဲ့ တစ်ခြား technique တွေကိုသုံးပြီး data consistency ကိုထိန်းရတယ်။ 
+Order service သည် Product service ကို မှီခိုနေတဲ့ သဘောမျိုးပဲ။ ဒီလိုနေရာမှာ ဆိုရင် 2PC မဟုတ်တဲ့ တစ်ခြား technique တွေကိုသုံးပြီး data consistency ကိုထိန်းရတယ်။
+
+Atomicity
+
+Business operation တွေမှာ အများအားဖြင့် data တစ်ခုထက် တစ်မျိုးထက်ပိုပြီး update လုပ်ရလေ့ရှိတယ်။ အပေါ်က ဥပမာမှာ ပြောခဲ့သလိုပဲ တစ်ချို့ data တွေက တစ်ချိန်တည်းမှာ 
+အတူတစ်ကွ ပြောင်းဖို့ update ဖြစ်ဖို့လိုတယ်။ ဥပမာ database write နှစ်ခုရှိတယ် ဆိုပါစို့။ 
+
+txn starts
+ - create an order
+ - update in stock item count  
+txn ends
+
+Atomic ဖြစ်တယ်ဆိုတာက ဒီ business operation တစ်ခုလုံး success ဖြစ်ရင်ဖြစ်၊ မဖြစ်ရင် operation တစ်ခုလုံး fail ဖြစ်သွားတာမျိုးကို ခေါ်တယ်။ 
+တစ်ချို့ တစ်ဝက်ကပဲ success ဖြစ်တာမျိုး ဖြစ်လို့မရဘူး။ အဲ့တော့ ဘယ်လိုအခြေနေမှာ မဆို success ဖြစ်ရင်ဖြစ် မဖြစ်ရင် တစ်ခုခု fail သွားတာနဲ့ transaction ကို abort လုပ်လို့ရရမယ်။
+write လုပ်ပြီးသွား db operation တွေက undo လုပ်တာပေါ့။ manually လုပ်မယ့် အစား database ကနေ လုပ်ပေးနိုင်ရမယ်။ ဒီ property ကိုပေးနိုင်ရင် atomic ဖြစ်တယ်လို့ပြောလို့ရတယ်။
