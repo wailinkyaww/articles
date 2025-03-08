@@ -69,14 +69,25 @@ We can write down the text and ( x / y ) coordinates pairs in any order regardle
 
 ```ts
 [{ "x": 0, "y": 1, "text": "header" } // item 1
-,{ "x": 0, "y": 2, "text": "paragraph 1" } // item 2
-,{ "x": 0, "y": 3, "text": "paragraph 2" } // item 3
-,{ "x": 0, "y": 4, "text": "footer" } // item 4
+,{ "x": 1, "y": 2, "text": "Page 1 / 2" } // item 2
+,{ "x": 0, "y": 2, "text": "paragraph 1" } // item 3
+,{ "x": 0, "y": 3, "text": "paragraph 2" } // item 4
+,{ "x": 0, "y": 4, "text": "footer" } // item 5
 ]
 ```
 
 Above example is the ideal representation. It shows that the representation follows our reading order.
 However, one could also just footer block in place of `Item 1` and get the same result.
+
+```ts
+// Both representation in PDF internal & what we will get after reading with PDF readers.
+[{ "x": 0, "y": 4, "text": "footer" } // item 1
+,{ "x": 1, "y": 2, "text": "Page 1 / 2" } // item 2
+,{ "x": 0, "y": 2, "text": "paragraph 1" } // item 3
+,{ "x": 0, "y": 3, "text": "paragraph 2" } // item 4
+,{ "x": 0, "y": 1, "text": "header" } // item 5
+]
+```
 
 Here, I am talking about top to bottom structure.
 This also applies left to right text elements.
@@ -90,7 +101,54 @@ Most PDF reader libraries don't have this.
 However, simple sorting will not work if your document contains 
 - other elements like tables embedded in the middle of text
 - multi column layouts
+<br />
+<br />
 
 We have two options here to detect the layout.
-1. use the algorithmic approach (will not cover all the edge cases)
-2. use deep learning models to detect the layout, the combine with algorithmic approach
+1. use the algorithmic approach (will not cover all the cases)
+2. use deep learning models to detect the layout
+
+### Tables
+
+Tables are used to communicate the important information
+
+For example,
+- Financial statements, invoices, sales figures, transaction records
+- Statistic results, metrics
+- Comparison across different entities
+- Compliance checklists and more...
+
+Let's try to understand why it is so hard to extract the tables from PDF.
+
+There are two types of tables.
+1. tables with borders ( borders whole table, rows, columns )
+2. borderless table
+
+Below is an example of borderless table taken from UOB Bank's financial statement.
+
+<img src="../assets/PDF/borderless-tables.png" style="border-radius: 5px;" width="500" />
+
+### Tables with Borders
+
+From end user's perspective, we see the table borders as `rectangles`.
+
+PDF internally has something called operators to represent the visual element.
+Below are some popular operators.
+1. moveTo (move the drawing from point A to point B, this is intended for building complex polygons)
+2. lineTo (draw a line from point A to point B)
+3. curveTo (draw a curve on cartesian)
+4. rectangle (draw a rectangle, need to specify x, y, width and height)
+
+For table border, row and column boundaries, rectangle are the most suitable ones to represent with.
+When reading the PDF content's using the libraries, to identify the tables, it should be just easy as
+- extracting all the rectangles
+- grouping those based on the layout (e.g., cell rectangle belongs to the parent table border rectangle)
+
+However, one could just `lineTo` and draw four lines to form a rectangle. <br />
+Or use `moveTo` to draw a rectangle.
+
+This makes it very hard to identify the tables.
+
+Fortunately, there are libraries out there which do hard work for you - covering all these `lineTo` / `moveTo` to detect the table layouts.
+
+Let's look at the borderless tables.
