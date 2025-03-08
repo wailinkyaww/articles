@@ -30,11 +30,7 @@ Say we want to render this piece of text - "quick fox jumps dog",
 we can represent as following.
 
 ```json
-{
-  "text": "quick fox jumps dog",
-  "x": 0,
-  "y": 0
-}
+{ "text": "quick fox jumps dog", "x": 0, "y": 0 }
 ```
 
 <img src="../assets/PDF/good-representation.png" style="border-radius: 5px;" width="500" />
@@ -44,9 +40,9 @@ At first, the use of ( x / y ) seems perfectly fine. Let's see another example.
 ```ts
 // Just assume each word has the same length for this example
 [{"text": "quick", "x": 0, "y": 0, "width": 0.5, "height": 0.3}
-	, {"text": "fox", "x": 1, "y": 0, "width": 0.5, "height": 0.3}
-	, {"text": "jumps", "x": 2, "y": 0, "width": 0.5, "height": 0.3}
-	, {"text": "dog", "x": 3, "y": 0, "width": 0.5, "height": 0.3}
+, {"text": "fox", "x": 1, "y": 0, "width": 0.5, "height": 0.3}
+, {"text": "jumps", "x": 2, "y": 0, "width": 0.5, "height": 0.3}
+, {"text": "dog", "x": 3, "y": 0, "width": 0.5, "height": 0.3}
 ]
 ```
 
@@ -78,23 +74,23 @@ We can write down the text and ( x / y ) coordinates pairs in any order regardle
 
 ```ts
 [{"x": 0, "y": 1, "text": "header"}
-	, {"x": 1, "y": 2, "text": "Page 1 / 2"}
-	, {"x": 0, "y": 2, "text": "paragraph 1"}
-	, {"x": 0, "y": 3, "text": "paragraph 2"}
-	, {"x": 0, "y": 4, "text": "footer"}
+, {"x": 1, "y": 2, "text": "Page 1 / 2"}
+, {"x": 0, "y": 2, "text": "paragraph 1"}
+, {"x": 0, "y": 3, "text": "paragraph 2"}
+, {"x": 0, "y": 4, "text": "footer"}
 ]
 ```
 
-Above example is the ideal representation. It shows that the representation follows our reading order.
+Above example is the ideal representation. It shows that the internal representation follows our reading order.
 However, someone could reorder these text blocks in any order, while still maintaining the same visual output.
 
 ```ts
 // Both representation in PDF internal & what we will get after reading with PDF readers.
 [{"x": 0, "y": 4, "text": "footer"}
-	, {"x": 1, "y": 2, "text": "Page 1 / 2"}
-	, {"x": 0, "y": 2, "text": "paragraph 1"}
-	, {"x": 0, "y": 3, "text": "paragraph 2"}
-	, {"x": 0, "y": 1, "text": "header"}
+, {"x": 1, "y": 2, "text": "Page 1 / 2"}
+, {"x": 0, "y": 2, "text": "paragraph 1"}
+, {"x": 0, "y": 3, "text": "paragraph 2"}
+, {"x": 0, "y": 1, "text": "header"}
 ]
 ```
 
@@ -142,7 +138,7 @@ Below is an example of borderless tables taken from UOB Bank's financial stateme
 
 From end user's perspective, we see the table borders as `rectangles`.
 
-PDF internally has something called operators to represent the visual element.
+PDF internally use something called operators to represent the visual element.
 Below are some popular operators.
 
 1. moveTo (move the drawing from point A to point B, this is intended for building complex polygons)
@@ -159,7 +155,10 @@ However, one could just use `lineTo` or `moveTo` and draw four lines to form a r
 This makes it very hard to identify the tables.
 
 Fortunately, there are libraries out there which do hard work for you - covering all these `lineTo` / `moveTo` to detect
-the table layouts.
+the table layouts. Here are popular libraries:
+1. Camelot - https://camelot-py.readthedocs.io/en/master/
+2. PyMuPDF - https://github.com/pymupdf/PyMuPDF
+
 Let's look at the borderless tables.
 
 #### Borderless Tables
@@ -170,10 +169,8 @@ Refer to UOB Bank's financial statement table image.
 To appear as table without any bounded border, we just have to align the cell items in the same column and row using the
 appropriate x / y values.
 
-We could try to solve this algorithmically by analyzing positions of the text items.
-However, the ground is just too wide to cover.
-
-Here are the examples:
+We could try to solve this algorithmically by analyzing positions of the text items. However, the ground is just too wide to cover.
+Here are the potential issues.
 
 **Column Width**
 
@@ -185,7 +182,7 @@ These could also contain line breaks.
 Even in our example,
 text "Other operating expenses" - serves as section title row while
 text "One-off expenses" followed by "- Citi integration cost" should ideally be merged into one single row.
-text "Of which," - can stays as dedicated row
+text "Of which," - can stays as a dedicated row
 
 The point is whether we should merge the text into one row (hence higher height) or we should separate into multiple
 rows also depends on
