@@ -31,7 +31,7 @@ we can represent as following.
 { "text": "quick fox jumps dog", "x": 0, "y": 0 }
 ```
 
-<img src="../assets/PDF/good-representation.png" style="border-radius: 5px; max-width: 500px;" />
+<img src="../assets/PDF/good-representation.png" style="border-radius: 5px;" width="500" />
 
 At first, the use of ( x / y ) seems perfectly fine.  Let's see another example.
 ```ts
@@ -53,6 +53,6 @@ So, how would you  get the same result?? <br />
 
 Take a look at the following image.
 
-<img src="../assets/PDF/bad-presentation.png" style="border-radius: 5px; max-width: 500px;" />
+<img src="../assets/PDF/bad-presentation.png" style="border-radius: 5px;" width="500" />
 
 People can just do the same for other important building blocks like new lines, column layouts, tables etc.,
