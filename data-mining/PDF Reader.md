@@ -14,7 +14,7 @@ What works, what doesn’t, and how to pick a good enough solution for your use 
 
 ## Understanding PDF Representation
 
-Before we talk about the libraries, let's dive into what are the inherent issues with the PDF itself. <br />
+Let's dive into what are the inherent issues with the PDF. <br />
 PDF internal representation favors the portability across digital platforms - android, iOS, Window, Mac, Linux, etc.,
 
 It's designed to solely rely on cartesian ( x / y ) coordinates system, whether it is
@@ -146,9 +146,50 @@ When reading the PDF content's using the libraries, to identify the tables, it s
 
 However, one could just `lineTo` and draw four lines to form a rectangle. <br />
 Or use `moveTo` to draw a rectangle.
-
 This makes it very hard to identify the tables.
 
 Fortunately, there are libraries out there which do hard work for you - covering all these `lineTo` / `moveTo` to detect the table layouts.
-
 Let's look at the borderless tables.
+
+### Borderless Tables
+
+If you read up to this point, you probably have a sense of what the PDF representation is trying to do.
+
+Refer to UOB Bank's financial statement table image.
+To appear as table without any bounded border, we just have to align the cell items in the same column and row using the appropriate x / y values.
+
+We could try to solve this algorithmically by analyzing positions of the text items. <br />
+However the ground is just too wide to cover. <br />
+Here are the examples.
+
+**Column Width** 
+
+Text inside the cells could be left align, right align, or centered. 
+These could also contains line breaks.
+
+**Row Height**
+
+Even in our example,
+text "Other operating expenses" - serves as section title row while
+text "One-off expenses" followed by "- Citi integration cost" should ideally be merged into one single row.
+text "Of which," - can stays as dedicated row
+
+The point is whether we should merge the text into one row (hence higher height) or we should separate into multiple rows also depends on
+the meaning of the text itself.
+
+To tackle the borderless tables, a good approach is to use deep learning models.
+Here are a few good candidates:
+1. **YOLOX v8** - has a magnificent performance in identifying the borderless tables.
+2. **Detectron2** - open source model from facebook designed for object detection, and segmentation.
+
+But these can only give us the bounding box of the whole table.
+
+Table Transformers - family of deep learning models used to identify the table structure, rows and columns.
+You can read more here - https://huggingface.co/docs/transformers/model_doc/detr.
+
+The following two models are a good start:
+1. Table Detection -  https://huggingface.co/microsoft/table-transformer-detection
+2. Table Structure Detection - https://huggingface.co/microsoft/table-transformer-structure-recognition
+
+These model can give us the x , y coordinates, width and height of rows and columns.
+We should also post-processing by using algorithmic approach to further tune the results based on our use case.
