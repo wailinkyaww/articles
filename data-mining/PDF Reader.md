@@ -3,11 +3,10 @@
 PDFs are a necessary evil in the digital world—a billion-dollar mistake that we are forced to work with.
 
 From students to legal documents, startups to enterprise, PDF is the most widely used format when it comes to sharing
-unstructured information.
-Despite its usefulness and widespread adoption, the cost of integrating PDFs with model tools, especially GenAI is
+unstructured information. Despite its usefulness and widespread adoption, the cost of integrating PDFs with model tools - especially GenAI, is
 continuously rising.
 
-I’ve tested libraries, third party services, and even implemented custom solutions on my own.
+I’ve tested libraries, third party services, and even implemented custom solutions myself.
 None of them have yielded a truly satisfactory result.
 
 Today I am going to share the trade-offs between all these libraries.
@@ -15,8 +14,8 @@ What works, what doesn’t, and how to pick a good enough solution for your use 
 
 ## Understanding PDF Representation
 
-Let's explore the inherent issues of the PDFs.
-PDF internal representation favors the portability across digital platforms - android, iOS, Window, Mac, Linux, etc.,
+Let's explore the inherent issues of PDFs.
+PDF internal representation prioritizes portability across digital platforms - Android, iOS, Window, Mac, Linux, etc.,
 
 It's designed to solely rely on cartesian ( x / y ) coordinates system, whether it is
 
@@ -87,7 +86,7 @@ We can write down the text and ( x / y ) coordinates pairs in any order regardle
 ```
 
 Above example is the ideal representation. It shows that the representation follows our reading order.
-However, someone reorder these text blocks in any order, while still maintaining the same visual output.
+However, someone could reorder these text blocks in any order, while still maintaining the same visual output.
 
 ```ts
 // Both representation in PDF internal & what we will get after reading with PDF readers.
@@ -100,7 +99,7 @@ However, someone reorder these text blocks in any order, while still maintaining
 ```
 
 Here, I am talking about top to bottom structure.
-This also applies left to right text elements.
+This also applies to left-to-right text elements.
 
 A simple way to fix this problem is to sort the text blocks (in case of English)
 
@@ -121,23 +120,21 @@ We have two options here to detect the layout.
 
 ### Tables
 
-Tables are used to communicate the important information
-
+Tables are used to conveying important information.
 For example,
 
 1. Financial statements, invoices, sales figures, transaction records
-2. Statistic results, metrics
+2. Statistical results, metrics
 3. Comparison across different entities
 4. Compliance checklists and more...
 
 Let's try to understand why it is so hard to extract the tables from PDF.
 
 There are two types of tables.
-
 1. tables with borders ( borders whole table, rows, columns )
 2. borderless table
 
-Below is an example of borderless table taken from UOB Bank's financial statement.
+Below is an example of borderless tables taken from UOB Bank's financial statement.
 
 <img src="../assets/PDF/borderless-tables.png" style="border-radius: 5px;" width="500" />
 
@@ -154,8 +151,7 @@ Below are some popular operators.
 4. rectangle (draw a rectangle, need to specify x, y, width and height)
 
 Table borders, rows, and columns boundaries are best represented using rectangles.
-When reading the PDF content's using the libraries, to identify the tables, it should be just easy as
-
+When reading PDF content using libraries, identifying tables should be as simple as:
 - extracting all the rectangles
 - grouping those based on the layout (e.g., cell rectangle belongs to the parent table border rectangle)
 
@@ -182,7 +178,7 @@ Here are the examples:
 **Column Width**
 
 Text inside the cells could be left align, right align, or centered.
-These could also contains line breaks.
+These could also contain line breaks.
 
 **Row Height**
 
@@ -211,8 +207,8 @@ The following two models are a good start:
 1. Table Detection -  https://huggingface.co/microsoft/table-transformer-detection
 2. Table Structure Detection - https://huggingface.co/microsoft/table-transformer-structure-recognition
 
-These model can give us the x , y coordinates, width and height of rows and columns.
-We should also post-processing by using algorithmic approach to further tune the results based on our use case.
+These model can provide the x , y coordinates, width and height of rows and columns.
+We should also apply post-processing by using algorithmic approach to further tune the results based on our use case.
 
 ## Final Thoughts
 
